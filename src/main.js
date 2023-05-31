@@ -36,6 +36,63 @@ function addCSS() {
     .next-batch-total-counter {
       font-size: 12px;
     }
+
+    #kk-utilities-filtering-settings textarea {
+      width: 200px;
+      height: 100px;
+    }
+
+    #kk-utilities-filtering-settings {
+      position: absolute;
+      width: 420px;
+      height: 270px;
+      top: 41px;
+      left: 1px;
+      background-color: rgba(40, 40, 40, 0.9);
+      z-index: 30;
+    }
+
+    .filtering-border-line {
+      position: absolute;
+      width: 0;
+      height: 100vh;
+      border: 1px solid white;
+      left: 0;
+      z-index: 10;
+    }
+
+    .filtering-slider {
+      width: 400px;
+    }
+
+    #kk-utilities-set-filters {
+      cursor: pointer;
+      user-select: none;
+      margin-top: 10px;
+      padding: 0 10px;
+      font-size: 14px;
+      color: orange;
+    }
+
+    #min-preload {
+      left: 10px;
+      border-color: red;
+    }
+
+    #max-preload {
+      left: 40px;
+      border-color: #4aa3ff;
+    }
+
+    #min-postload {
+      left: 10px;
+      border-color: yellow;
+    }
+
+    #max-postload {
+      left: 40px;
+      border-color: #77ff77;
+    }
   `)
 }
 
@@ -100,14 +157,6 @@ function addFiltering() {
   const undoButton = document.getElementById('neuroglancer-undo-button')
   const setFilters = document.createElement('div')
   setFilters.id = 'kk-utilities-set-filters'
-  setFilters.style.cssText = `
-    cursor: pointer;
-    user-select: none;
-    margin-top: 10px;
-    padding: 0 10px;
-    font-size: 14px;
-    color: orange;
-  `
   setFilters.textContent = 'Set filters'
   undoButton.before(setFilters)
 
@@ -230,8 +279,8 @@ function addFiltering_createControls() {
     <button id="kk-utilities-filtering-settings-x-button" class="coords-button" data-type="x">X</button>
     <button id="kk-utilities-filtering-settings-y-button" class="coords-button" data-type="y">Y</button>
     <button id="kk-utilities-filtering-settings-z-button" class="coords-button" data-type="z">Z</button>
-    <input type="range" id="kk-utilities-filtering-settings-min" class="filtering-slider" />
-    <input type="range" id="kk-utilities-filtering-settings-max" class="filtering-slider" />
+    <input type="range" id="kk-utilities-min-preload-slider" class="filtering-slider" />
+    <input type="range" id="kk-utilities-max-preload-slider" class="filtering-slider" />
     <textarea id="kk-utilities-filtering-input"></textarea>
     <textarea id="kk-utilities-filtering-output"></textarea><br />
     <span id="kk-utilities-filtering-input-counter"></span><span id="kk-utilities-filtering-output-counter"></span>
@@ -242,8 +291,8 @@ function addFiltering_createControls() {
     <button id="kk-utilities-add-to-storage">Add</button>
     <button id="kk-utilities-hide-lines" data-state="visible">Hide lines</button>
     <button id="kk-utilities-save-left">Save left</button>
-    <input type="range" id="kk-utilities-post-filtering-settings-min" class="filtering-slider" />
-    <input type="range" id="kk-utilities-post-filtering-settings-max" class="filtering-slider" />
+    <input type="range" id="kk-utilities-min-postload-slider" class="filtering-slider" />
+    <input type="range" id="kk-utilities-max-postload-slider" class="filtering-slider" />
     <button id="kk-utilities-post-filter">Start filtering</button>
     <button id="kk-utilities-filter-by-size-smaller">Remove smaller</button>
     <button id="kk-utilities-filter-by-size-larger">Remove larger</button>
@@ -251,95 +300,47 @@ function addFiltering_createControls() {
   </div>
 `
 
-  const css = /*css*/`
-    #kk-utilities-filtering-settings textarea {
-      width: 200px;
-      height: 100px;
-    }
-
-    #kk-utilities-filtering-settings {
-      position: absolute;
-      width: 420px;
-      height: 270px;
-      top: 41px;
-      left: 1px;
-      background-color: rgba(40, 40, 40, 0.9);
-      z-index: 30;
-    }
-
-    .filtering-border-line {
-      position: absolute;
-      width: 0;
-      height: 100vh;
-      border: 1px solid white;
-      left: 0;
-      z-index: 10;
-    }
-
-    .filtering-slider {
-      width: 400px;
-    }
-  `
-
   document.body.insertAdjacentHTML('beforeend', html)
-  
-  const styles = document.createElement('style')
-  styles.type = 'text/css'
-  styles.innerText = css
-  document.head.appendChild(styles)
-  
+
   const lineMin = document.createElement('div')
+  lineMin.id = 'min-preload'
   lineMin.classList.add('filtering-border-line')
-  lineMin.style.left = '10px'
-  lineMin.style.borderColor = 'red'
   document.body.appendChild(lineMin)
 
   const lineMax = document.createElement('div')
+  lineMax.id = 'max-preload'
   lineMax.classList.add('filtering-border-line')
-  lineMax.style.left = '40px'
-  lineMax.style.borderColor = '#4aa3ff'
   document.body.appendChild(lineMax)
 
   linePostMin = document.createElement('div')
+  linePostMin.id = 'min-postload'
   linePostMin.classList.add('filtering-border-line')
-  linePostMin.style.left = '10px'
-  linePostMin.style.borderColor = 'yellow'
   document.body.appendChild(linePostMin)
 
   const linePostMax = document.createElement('div')
+  linePostMax.id = 'max-postload'
   linePostMax.classList.add('filtering-border-line')
-  linePostMax.style.left = '40px'
-  linePostMax.style.borderColor = '#77ff77'
   document.body.appendChild(linePostMax)
 
-  return { lineMin, lineMax, linePostMin, linePostMax }
+  return [lineMin, lineMax, linePostMin, linePostMax]
 }
 
 function addFiltering_showSettings() {
   let current = 'x'
   let lineMin, lineMax, linePostMin, linePostMax
+  let lines = []
 
   if (!document.getElementById('kk-utilities-filtering-settings')) {
-    ({ lineMin, lineMax , linePostMin, linePostMax } = addFiltering_createControls())
+    lines = addFiltering_createControls()
   }
   else {
     document.getElementById('kk-utilities-filtering-settings').style.display = 'block'
-    let lines = document.querySelectorAll('.filtering-border-line')
-    lineMin = lines[0]
-    lineMax = lines[1]
-    linePostMin = lines[2]
-    linePostMax = lines[3]
-    lineMin.style.display = 'block'
-    lineMax.style.display = 'block'
-    linePostMin.style.display = 'block'
-    linePostMax.style.display = 'block'
+    lines = document.querySelectorAll('.filtering-border-line')
+    lines.forEach(line => line.style.display = 'block')
   }
 
   if (batching) {
-    lineMin.style.display = 'none'
-    lineMax.style.display = 'none'
-    linePostMin.style.display = 'none'
-    linePostMax.style.display = 'none'
+    lines.forEach(line => line.style.display = 'none')
   }
 
 
@@ -347,11 +348,11 @@ function addFiltering_showSettings() {
     document.getElementById('kk-utilities-filtering-settings').remove()
   })
 
-  const min = document.getElementById('kk-utilities-filtering-settings-min')
-  const max = document.getElementById('kk-utilities-filtering-settings-max')
+  const min = document.getElementById('kk-utilities-min-preload-slider')
+  const max = document.getElementById('kk-utilities-max-preload-slider')
 
-  const postMin = document.getElementById('kk-utilities-post-filtering-settings-min')
-  const postMax = document.getElementById('kk-utilities-post-filtering-settings-max')
+  const postMin = document.getElementById('kk-utilities-min-postload-slider')
+  const postMax = document.getElementById('kk-utilities-max-postload-slider')
 
   const x = document.getElementById('kk-utilities-filtering-settings-x-button')
   const y = document.getElementById('kk-utilities-filtering-settings-y-button')
@@ -364,28 +365,24 @@ function addFiltering_showSettings() {
 
   function setLine(type) {
     let target
-    let sliderId
+
     switch (type) {
-      case 'min':
-        target = lineMin
-        sliderId = 'kk-utilities-filtering-settings-min'
+      case 'kk-utilities-min-preload-slider':
+        target = lines[0]
       break
-      case 'max':
-        target = lineMax
-        sliderId = 'kk-utilities-filtering-settings-max'
+      case 'kk-utilities-max-preload-slider':
+        target = lines[1]
       break
-      case 'postMin':
-        target = linePostMin
-        sliderId = 'kk-utilities-post-filtering-settings-min'
+      case 'kk-utilities-min-postload-slider':
+        target = lines[2]
       break
-      case 'postMax':
-        target = linePostMax
-        sliderId = 'kk-utilities-post-filtering-settings-max'
+      case 'kk-utilities-max-postload-slider':
+        target = lines[3]
       break
     }
 
     // source: ChatGPT
-    const slider = document.getElementById(sliderId)
+    const slider = document.getElementById(type)
     let val = (slider.value - slider.min) * (mainWidth - 0) / (slider.max - slider.min) + 0;
     val = (current === 'z' ? mainWidth * 0.306 : 0) + val * (current === 'z' ? 0.387 : 1) + 'px'
     target.style.left = val
@@ -418,10 +415,7 @@ function addFiltering_showSettings() {
     postMin.step = 1
     postMax.step = 1
 
-    setLine('min')
-    setLine('max')
-    setLine('postMin')
-    setLine('postMax')
+    document.getElementsByClassName('filtering-slider').forEach(el => setLine(el.id))
   }
 
   function setPlane() {
@@ -449,22 +443,22 @@ function addFiltering_showSettings() {
 
   min.addEventListener('input', e => {
     filteringSettings[current].min = e.target.value
-    setLine('min')
+    setLine(e.target.id)
   })
 
   max.addEventListener('input', e => {
     filteringSettings[current].max = e.target.value
-    setLine('max')
+    setLine(e.target.id)
   })
 
   postMin.addEventListener('input', e => {
     filteringSettings[current].postMin = e.target.value
-    setLine('postMin')
+    setLine(e.target.id)
   })
 
   postMax.addEventListener('input', e => {
     filteringSettings[current].postMax = e.target.value
-    setLine('postMax')
+    setLine(e.target.id)
   })
 
   document.getElementById('kk-utilities-filtering-settings')?.addEventListener('change', e => {
