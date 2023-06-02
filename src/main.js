@@ -1,6 +1,6 @@
 document.addEventListener('dock-ready', () => {
-  addFiltering()
-  addNextButton()
+  addMenuButton()
+  //addNextButton()
   addCSS()
 })
 
@@ -13,131 +13,6 @@ if (!document.getElementById('dock-script')) {
   document.head.appendChild(script)
 }
 
-function addCSS() {
-  Dock.addCss(/*css*/`
-    #kk-utilities-next-batch {
-      position: absolute;
-      right: 110px;
-      bottom: 500px;
-      z-index: 10;
-      width: 200px;
-      height: 90px;
-      background-color: #449;
-      color: orange;
-      font-size: 28px;
-      border: 1px solid #444;
-      cursor: pointer;
-    }
-
-    #kk-utilities-next-batch:hover {
-      background-color: #669;
-    }
-
-    .next-batch-total-counter {
-      font-size: 12px;
-    }
-
-    #kk-utilities-filtering-settings textarea {
-      width: 200px;
-      height: 100px;
-    }
-
-    #kk-utilities-filtering-settings {
-      position: absolute;
-      width: 420px;
-      height: 270px;
-      top: 41px;
-      left: 1px;
-      background-color: rgba(40, 40, 40, 0.9);
-      z-index: 30;
-    }
-
-    .filtering-border-line {
-      position: absolute;
-      width: 0;
-      height: 100vh;
-      border: 1px solid white;
-      left: 0;
-      z-index: 10;
-    }
-
-    .filtering-slider {
-      width: 400px;
-    }
-
-    #kk-utilities-set-filters {
-      cursor: pointer;
-      user-select: none;
-      margin-top: 10px;
-      padding: 0 10px;
-      font-size: 14px;
-      color: orange;
-    }
-
-    #min-preload {
-      left: 10px;
-      border-color: red;
-    }
-
-    #max-preload {
-      left: 40px;
-      border-color: #4aa3ff;
-    }
-
-    #min-postload {
-      left: 10px;
-      border-color: yellow;
-    }
-
-    #max-postload {
-      left: 40px;
-      border-color: #77ff77;
-    }
-  `)
-}
-
-
-const filteringSettings_borders = {
-  x: {
-    min: 20480 / 4,
-    max: 236800 / 4,
-    step: 256,
-    postMin: 20480 / 4,
-    postMax: 236800 / 4,
-  },
-  y: {
-    min: 5120 / 4,
-    max: 118400 / 4,
-    step: 256,
-    postMin: 5120 / 4,
-    postMax: 118400 / 4,
-  },
-  z: {
-    min: 0,
-    max: 7064,
-    step: 512,
-    postMin: 0,
-    postMax: 7064,
-  }
-}
-
-const filteringSettings_planes = {
-  x: {
-    zoom: 6545,
-    orientation: [-0.7071067690849304, 0, 0, 0.7071067690849304],
-    position: [514208, 248348, 141240]
-  },
-  y: {
-    zoom: 3410,
-    orientation: [0.5, 0.5, -0.5, -0.5],
-    position: [514208, 248348, 141240]
-  },
-  z: {
-    zoom: 5450,
-    orientation: [-0.7071067690849304, 0, -0.7071067690849304, 0],
-    position: [514208, 248348, 141240]
-  }
-}
 
 let filteringSettings = {}
 let filtersVisible = false
@@ -145,7 +20,7 @@ let checkedCounter = 0
 let correctCounter = 0
 let correctIds = []
 
-function addFiltering() {
+function addMenuButton() {
   let settings = Dock.ls.get('utilities-filtering', true)
   if (settings) {
     filteringSettings = settings
@@ -156,8 +31,8 @@ function addFiltering() {
 
   const undoButton = document.getElementById('neuroglancer-undo-button')
   const setFilters = document.createElement('div')
-  setFilters.id = 'kk-utilities-set-filters'
-  setFilters.textContent = 'Set filters'
+  setFilters.id = 'kk-filtering-set-filters'
+  setFilters.textContent = 'Filters'
   undoButton.before(setFilters)
 
   setFilters.addEventListener('click', () => {
@@ -172,16 +47,16 @@ function addFiltering() {
 }
 
 function addFiltering_hideSettings() {
-  document.getElementById('kk-utilities-filtering-settings').style.display = 'none'
+  document.getElementById('kk-filtering-settings').style.display = 'none'
   document.querySelectorAll('.filtering-border-line').forEach(line => {
     line.style.display = 'none'
   })
 }
-
+/*
 function addNextButton() {
   const batchSize = 20
   const nextButton = document.createElement('button')
-  nextButton.id = 'kk-utilities-next-batch'
+  nextButton.id = 'kk-filtering-next-batch'
   nextButton.innerHTML = 'Next (<span class="next-batch-batch-number">0</span>)<br /><span class="next-batch-total-counter">[?]</span>'
   document.body.appendChild(nextButton)
 
@@ -232,7 +107,7 @@ function addNextButton() {
 
       if (!batch.length) {
         return Dock.dialog({
-          id: 'kk-utilities-no-ids',
+          id: 'kk-filtering-no-ids',
           html: 'All IDs have been checked',
           destroyAfterClosing: true,
           okLabel: 'OK',
@@ -272,31 +147,77 @@ function addNextButton() {
     }
   })
 }
-
+*/
 function addFiltering_createControls() {
   const html = /*html*/`
-  <div id="kk-utilities-filtering-settings">
-    <button id="kk-utilities-filtering-settings-x-button" class="coords-button" data-type="x">X</button>
-    <button id="kk-utilities-filtering-settings-y-button" class="coords-button" data-type="y">Y</button>
-    <button id="kk-utilities-filtering-settings-z-button" class="coords-button" data-type="z">Z</button>
-    <input type="range" id="kk-utilities-min-preload-slider" class="filtering-slider" />
-    <input type="range" id="kk-utilities-max-preload-slider" class="filtering-slider" />
-    <textarea id="kk-utilities-filtering-input"></textarea>
-    <textarea id="kk-utilities-filtering-output"></textarea><br />
-    <span id="kk-utilities-filtering-input-counter"></span><span id="kk-utilities-filtering-output-counter"></span>
-    <button id="kk-utilities-filtering-check">Check</button>
-    <button id="kk-utilities-filtering-check-dust-only">Check (dust only)</button>
-    <button id="kk-utilities-filtering-move">Move</button>
-    <button id="kk-utilities-filtering-settings-close">Close</button><br />
-    <button id="kk-utilities-add-to-storage">Add</button>
-    <button id="kk-utilities-hide-lines" data-state="visible">Hide lines</button>
-    <button id="kk-utilities-save-left">Save left</button>
-    <input type="range" id="kk-utilities-min-postload-slider" class="filtering-slider" />
-    <input type="range" id="kk-utilities-max-postload-slider" class="filtering-slider" />
-    <button id="kk-utilities-post-filter">Start filtering</button>
-    <button id="kk-utilities-filter-by-size-smaller">Remove smaller</button>
-    <button id="kk-utilities-filter-by-size-larger">Remove larger</button>
-    <button id="kk-utilities-filter-lamina">Remove lamina</button>
+  <div id="kk-filtering-settings">
+  
+    <div id="kk-filtering-planes">
+      <span>choose plane</span>
+      <button id="kk-filtering-settings-x-button" class="coords-button" data-type="x">X</button>
+      <button id="kk-filtering-settings-y-button" class="coords-button" data-type="y">Y</button>
+      <button id="kk-filtering-settings-z-button" class="coords-button" data-type="z">Z</button>
+    </div>
+    <div id="kk-filtering-settings-button-wrapper">
+      <button id="kk-filtering-settings-button">settings</button>
+    </div>
+    
+    <div id="kk-filtering-header-preload" class="kk-filtering-header">PRELOAD</div>
+    <div id="kk-filtering-counters-wrapper" title="total / processed / passed">
+      <span id="kk-filtering-input-counter">0</span> /
+      <span id="kk-filtering-output-counter">0</span> /
+      <span id="kk-filtering-output-counter-2">0</span>
+    </div>
+    <br />
+
+    <textarea id="kk-filtering-input" placeholder="input"></textarea>
+    <textarea id="kk-filtering-output" placeholder="output"></textarea>
+
+    <div class="kk-filtering-sliders-group">
+      <div class="kk-filtering-slider-container">
+        <label for="kk-filtering-min-preload-slider">min</label>
+        <input type="range" id="kk-filtering-min-preload-slider" class="filtering-slider" />
+      </div>
+      <div class="kk-filtering-slider-container">
+        <label for="kk-filtering-max-preload-slider">max</label>
+        <input type="range" id="kk-filtering-max-preload-slider" class="filtering-slider" />
+      </div>
+    </div>
+
+    <div class="kk-filtering-button-group">
+      <span>filter</span>
+      <button id="kk-filtering-check">lines+dust</button>
+      <button id="kk-filtering-check-dust-only">dust</button>
+      <button id="kk-filtering-copy">copy</button>
+      <button id="kk-filtering-clear">clear</button>
+      <!--<button id="kk-filtering-hide-lines" data-state="visible">hide lines</button>-->
+    </div>
+
+    <div class="kk-filtering-header">POSTLOAD</div>
+
+    <div class="kk-filtering-sliders-group">
+      <div class="kk-filtering-slider-container">
+        <label for="kk-filtering-min-postload-slider">min</label>
+        <input type="range" id="kk-filtering-min-postload-slider" class="filtering-slider" />
+      </div>
+      <div class="kk-filtering-slider-container">
+        <label for="kk-filtering-max-postload-slider">max</label>
+        <input type="range" id="kk-filtering-max-postload-slider" class="filtering-slider" />
+      </div>
+    </div>
+    <div class="kk-filtering-button-group">
+      <span>remove</span>
+      <button id="kk-filtering-post-filter">by lines</button>
+      <button id="kk-filtering-filter-by-size-smaller">smaller</button>
+      <button id="kk-filtering-filter-by-size-larger">larger</button>
+      <button id="kk-filtering-filter-lamina" class="kk-disabled-button">by planes</button>
+    </div>
+<!--
+    <div class="kk-filtering-header">BATCHES</div>
+    <div class="kk-filtering-button-group">
+      <button id="kk-filtering-add-to-storage">add</button>
+      <button id="kk-filtering-save-left">save left</button>
+    </div>-->
   </div>
 `
 
@@ -330,11 +251,11 @@ function addFiltering_showSettings() {
   let lineMin, lineMax, linePostMin, linePostMax
   let lines = []
 
-  if (!document.getElementById('kk-utilities-filtering-settings')) {
+  if (!document.getElementById('kk-filtering-settings')) {
     lines = addFiltering_createControls()
   }
   else {
-    document.getElementById('kk-utilities-filtering-settings').style.display = 'block'
+    document.getElementById('kk-filtering-settings').style.display = 'block'
     lines = document.querySelectorAll('.filtering-border-line')
     lines.forEach(line => line.style.display = 'block')
   }
@@ -344,19 +265,15 @@ function addFiltering_showSettings() {
   }
 
 
-  document.getElementById('kk-utilities-filtering-settings-close').addEventListener('click', () => {
-    document.getElementById('kk-utilities-filtering-settings').remove()
-  })
+  const min = document.getElementById('kk-filtering-min-preload-slider')
+  const max = document.getElementById('kk-filtering-max-preload-slider')
 
-  const min = document.getElementById('kk-utilities-min-preload-slider')
-  const max = document.getElementById('kk-utilities-max-preload-slider')
+  const postMin = document.getElementById('kk-filtering-min-postload-slider')
+  const postMax = document.getElementById('kk-filtering-max-postload-slider')
 
-  const postMin = document.getElementById('kk-utilities-min-postload-slider')
-  const postMax = document.getElementById('kk-utilities-max-postload-slider')
-
-  const x = document.getElementById('kk-utilities-filtering-settings-x-button')
-  const y = document.getElementById('kk-utilities-filtering-settings-y-button')
-  const z = document.getElementById('kk-utilities-filtering-settings-z-button')
+  const x = document.getElementById('kk-filtering-settings-x-button')
+  const y = document.getElementById('kk-filtering-settings-y-button')
+  const z = document.getElementById('kk-filtering-settings-z-button')
 
   const main = globalThis.getComputedStyle(document.querySelector('.neuroglancer-rendered-data-panel'))
   const mainWidth = parseInt(main.width, 10)
@@ -367,16 +284,16 @@ function addFiltering_showSettings() {
     let target
 
     switch (type) {
-      case 'kk-utilities-min-preload-slider':
+      case 'kk-filtering-min-preload-slider':
         target = lines[0]
       break
-      case 'kk-utilities-max-preload-slider':
+      case 'kk-filtering-max-preload-slider':
         target = lines[1]
       break
-      case 'kk-utilities-min-postload-slider':
+      case 'kk-filtering-min-postload-slider':
         target = lines[2]
       break
-      case 'kk-utilities-max-postload-slider':
+      case 'kk-filtering-max-postload-slider':
         target = lines[3]
       break
     }
@@ -433,7 +350,7 @@ function addFiltering_showSettings() {
     setPlane()
   }
 
-  document.getElementById('kk-utilities-filtering-settings').addEventListener('click', e => {
+  document.getElementById('kk-filtering-settings').addEventListener('click', e => {
     if (!e.target.classList.contains('coords-button')) return
     current = e.target.dataset.type
 
@@ -461,41 +378,41 @@ function addFiltering_showSettings() {
     setLine(e.target.id)
   })
 
-  document.getElementById('kk-utilities-filtering-settings')?.addEventListener('change', e => {
+  document.getElementById('kk-filtering-settings')?.addEventListener('change', e => {
     if (!e.target.classList.contains('filtering-slider')) return
 
     Dock.ls.set('utilities-filtering', filteringSettings, true)
   })
 
 
-  document.getElementById('kk-utilities-filtering-check').addEventListener('click', () => {
+  document.getElementById('kk-filtering-check').addEventListener('click', () => {
     checkingListener()
   })
 
-  document.getElementById('kk-utilities-filtering-check-dust-only').addEventListener('click', () => {
+  document.getElementById('kk-filtering-check-dust-only').addEventListener('click', () => {
     checkingListener(true)
   })
 
 
   function getIds() {
-    let ids = document.getElementById('kk-utilities-filtering-input').value
+    let ids = document.getElementById('kk-filtering-input').value
     return ids.split(/[ ,\n]+/).map(str => BigInt(str)).filter(num => num !== BigInt(0)) // source: ChatGPT
   }
 
 
   function checkingListener(dustOnly = false) {
-    document.getElementById('kk-utilities-filtering-output').value = ''
+    document.getElementById('kk-filtering-output').value = ''
     let ids = getIds()
     urls = ids
     processUrls(dustOnly)
 
-    document.getElementById('kk-utilities-filtering-input-counter').textContent = ids.length + ' / '
-    document.getElementById('kk-utilities-filtering-output-counter').textContent = '0 / 0'
+    document.getElementById('kk-filtering-input-counter').textContent = ids.length + ' / '
+    document.getElementById('kk-filtering-output-counter').textContent = '0 / 0'
     checkedCounter = 0
     correctCounter = 0
   }
 
-  document.getElementById('kk-utilities-hide-lines').addEventListener('click', e => {
+  document.getElementById('kk-filtering-hide-lines').addEventListener('click', e => {
     const state = e.target.dataset.state
     if (state === 'visible') {
       document.getElementsByClassName('filtering-border-line').forEach(el => {
@@ -513,23 +430,17 @@ function addFiltering_showSettings() {
     }
   })
 
-  document.getElementById('kk-utilities-filtering-move').addEventListener('click', () => {
-    const customEvent = new CustomEvent('add-ids', { detail: {
-      target: 0,
-      ids: correctIds
-    }})
-    document.dispatchEvent(customEvent)
-
-    document.getElementById('kk-utilities-filtering-input-counter').textContent = '0 / '
-    document.getElementById('kk-utilities-filtering-output-counter').textContent = '0 / 0'
-    document.getElementById('kk-utilities-filtering-input').value = ''
-    document.getElementById('kk-utilities-filtering-output').value = ''
+  document.getElementById('kk-filtering-clear').addEventListener('click', () => {
+    document.getElementById('kk-filtering-input-counter').textContent = '0 / '
+    document.getElementById('kk-filtering-output-counter').textContent = '0 / 0'
+    document.getElementById('kk-filtering-input').value = ''
+    document.getElementById('kk-filtering-output').value = ''
     correctIds = []
   })
  
   let filteringActive = false
   let filteringHandler
-  document.getElementById('kk-utilities-post-filter').addEventListener('click', e => {
+  document.getElementById('kk-filtering-post-filter').addEventListener('click', e => {
     let voxelSize = Dock.getVoxelSize()
     const [ vx, vy, vz ]  = voxelSize
     let {
@@ -656,7 +567,7 @@ function addFiltering_showSettings() {
     }
   }
 
-
+/*
   function filterOutLamina() {
     function calculateNormal(A, B, C) {
       const vectorAB = [B[0] - A[0], B[1] - A[1], B[2] - A[2]];
@@ -803,31 +714,31 @@ function addFiltering_showSettings() {
     })
   }
 
-
-  document.getElementById('kk-utilities-filter-by-size-smaller').addEventListener('click', e => {
+*/
+  document.getElementById('kk-filtering-filter-by-size-smaller').addEventListener('click', e => {
     filterBySize('<')
   })
 
-  document.getElementById('kk-utilities-filter-by-size-larger').addEventListener('click', e => {
+  document.getElementById('kk-filtering-filter-by-size-larger').addEventListener('click', e => {
     filterBySize('>')
   })
-
-  document.getElementById('kk-utilities-filter-lamina').addEventListener('click', e => {
+/*
+  document.getElementById('kk-filtering-filter-lamina').addEventListener('click', e => {
     filterOutLamina()
   })
 
 
-  document.getElementById('kk-utilities-add-to-storage').addEventListener('click', () => {
+  document.getElementById('kk-filtering-add-to-storage').addEventListener('click', () => {
     const customEvent = new CustomEvent('add-ids', { detail: {
       target: 'batches',
       ids: getIds()
     }})
     document.dispatchEvent(customEvent)
-    document.getElementById('kk-utilities-filtering-input').value = ''
+    document.getElementById('kk-filtering-input').value = ''
   })
 
 
-  document.getElementById('kk-utilities-save-left').addEventListener('click', e => {
+  document.getElementById('kk-filtering-save-left').addEventListener('click', e => {
     const ids = []
     const segments = document.querySelectorAll('.segment-button')
     segments.forEach(seg => ids.push(seg.dataset.segId))
@@ -841,7 +752,7 @@ function addFiltering_showSettings() {
     document.dispatchEvent(customEvent)
   })
 }
-
+*/
 
 const MAX_CONNECTIONS = 50
 const MAX_RETRIES = 10
@@ -881,7 +792,7 @@ const processUrls = async (dustOnly = false) => {
         .then(result => {
           if (result) {
             if (filteringSettings_check(id, result, dustOnly)) {
-              document.getElementById('kk-utilities-filtering-output').value += '\r\n' + id
+              document.getElementById('kk-filtering-output').value += '\r\n' + id
             }
           }
         })
@@ -911,7 +822,7 @@ const processUrls = async (dustOnly = false) => {
 
   const failed = Array.from(failedIds)
   Dock.dialog({
-    id: 'kk-utilities-filtering-show-failed-urls',
+    id: 'kk-filtering-show-failed-urls',
     html: failed.length ? `Failed URLs: ${failed}` : 'Finished without fails',
     okLabel: failed.length ? 'Copy URLs to clipboard' : 'Close',
     okCallback: () => {
@@ -961,7 +872,7 @@ function filteringSettings_check(id, result, dustOnly = false) {
     correctIds.push(id)
   }
 
-  document.getElementById('kk-utilities-filtering-output-counter').textContent = `${checkedCounter} / ${correctCounter}`
+  document.getElementById('kk-filtering-output-counter').textContent = `${checkedCounter} / ${correctCounter}`
 
   return correct
 }
