@@ -1,15 +1,15 @@
 // ==UserScript==
-// @name         Data Filter-Splitter
+// @name         Filters
 // @namespace    KrzysztofKruk-FlyWire
 // @version      0.1
-// @description  Helps processing large amounts of segments by filtering and splitting them into smaller batches
+// @description  Helps filtering large groups of segments
 // @author       Krzysztof Kruk
 // @match        https://ngl.flywire.ai/*
 // @match        https://edit.flywire.ai/*
 // @connect      prodv1.flywire-daf.com
-// @updateURL    https://raw.githubusercontent.com/ChrisRaven/FlyWire-Data-Filter-Splitter/main/Data-filter-splitter.user.js
-// @downloadURL  https://raw.githubusercontent.com/ChrisRaven/FlyWire-Data-Filter-Splitter/main/Data-filter-splitter.user.js
-// @homepageURL  https://github.com/ChrisRaven/FlyWire-Data-Filter-Splitter
+// @updateURL    https://raw.githubusercontent.com/ChrisRaven/FlyWire-Filters/main/Filters.user.js
+// @downloadURL  https://raw.githubusercontent.com/ChrisRaven/FlyWire-Filters/main/Filters.user.js
+// @homepageURL  https://github.com/ChrisRaven/FlyWire-Filters
 // ==/UserScript==
 
 
@@ -84,7 +84,7 @@ function addCSS() {
     button.kk-disabled-button {
       background-color: gray !important;
       cursor: default !important;
-      color: #ccc !important;
+      color: #ccc !important; 
     }
 
     button.kk-disabled-button:hover {

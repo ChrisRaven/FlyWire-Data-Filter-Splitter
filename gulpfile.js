@@ -12,7 +12,7 @@ const files = [
 
 gulp.task('build', function () {
   return gulp.src(files)
-    .pipe(concat('Data-filter-splitter.user.js'))
+    .pipe(concat('Filters.user.js'))
     .pipe(gulp.dest('.'));
 });
 

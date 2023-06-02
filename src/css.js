@@ -25,7 +25,7 @@ function addCSS() {
     button.kk-disabled-button {
       background-color: gray !important;
       cursor: default !important;
-      color: #ccc !important;
+      color: #ccc !important; 
     }
 
     button.kk-disabled-button:hover {
